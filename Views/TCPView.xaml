@@ -1,0 +1,92 @@
+﻿<Window x:Class="TcpClient.Views.MainWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TcpClient.Views"
+        mc:Ignorable="d"
+        Title="TCPView" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <GroupBox Header=" Cấu hình kết nối " Grid.Row="0" Margin="0,0,0,10" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <RadioButton Content="Server" 
+                                 GroupName="MyGroup" 
+                                 Style="{StaticResource {x:Type ToggleButton}}" 
+                                 Width="60" Margin="5" Height="25"
+                                 Command="{Binding ServerCommand}"/>
+
+                    <RadioButton Content="Client" 
+                                 GroupName="MyGroup" 
+                                 Style="{StaticResource {x:Type ToggleButton}}" 
+                                 Width="60" Margin="5" Height="25"
+                                 Command="{Binding ClientCommand}"/>
+                    
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="IP Address:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                <TextBox x:Name="txtIp" Grid.Column="2" Text="{Binding TxtIPAddress, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Padding="3"/>
+
+                <TextBlock Grid.Column="3" Text="Port:" VerticalAlignment="Center" Margin="10,0,5,0"/>
+                <TextBox x:Name="txtPort" Grid.Column="4" Text="{Binding TxtPort, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Padding="3"/>
+
+                <Button x:Name="btnConnect" 
+                        Grid.Column="5" 
+                        Background="LightCoral" 
+                        Content="Kết nối" 
+                        Margin="10,0,0,0" 
+                        Padding="10,3" 
+                        Foreground="Black" 
+                        FontWeight="Bold"
+                        Command="{Binding ConnectCommand}"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header=" Gửi dữ liệu đi " Grid.Row="1" Margin="0,0,0,10" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="txtMessage" Text="{Binding TxMessage}" VerticalAlignment="Center" Padding="5"/>
+                <Button x:Name="btnSend" Grid.Column="1" Content="SEND" Command="{Binding SENDCommand}" Background="#2196F3" Foreground="White" FontWeight="Bold" IsDefault="True" Width=" 70"/>
+                <Button x:Name="btnReqt" Grid.Column="2" Content="REQT" Command="{Binding REQTCommand}" Background="#2196F3" Foreground="White" FontWeight="Bold" IsDefault="True" Width=" 70"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Header=" Nhật ký / Dữ liệu nhận được " Grid.Row="2" Padding="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ListView ItemsSource="{Binding RxMessage}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Date" DisplayMemberBinding="{Binding Date, StringFormat='{}{0:dd/MM/yyyy HH:mm:ss}'}" Width="150"/>
+                            <GridViewColumn Header="Length" DisplayMemberBinding="{Binding Length}" Width="60"/>
+                            <GridViewColumn Header="Command" DisplayMemberBinding="{Binding Command}" Width="60"/>
+                            <GridViewColumn Header="Message" DisplayMemberBinding="{Binding Message}" Width="400"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <Button x:Name="btnHex" Grid.Column="1" Content=" HEX/ASCII " Margin="10,0,0,0" Height="40" Padding="15,5" Command="{Binding HEXCommand}" Background="#2196F3" Foreground="White"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>
