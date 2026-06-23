@@ -16,6 +16,7 @@ namespace TcpClient.ViewModel
     {
         bool? isClient = null;
         Client client;
+        Server server;
         [ObservableProperty]
         private string? txtIPAddress;
 
@@ -48,7 +49,7 @@ namespace TcpClient.ViewModel
             }
             else
             {
-                var server = new Server
+                server = new Server
                 {
                     IpAddress = TxtIPAddress,
                     Port = TxtPort
@@ -78,15 +79,34 @@ namespace TcpClient.ViewModel
         [RelayCommand] 
         private async Task SEND() 
         {
-            client.TxMessage = TxtMessage;
-            if (await client.Send() == true) MessageBox.Show("Đã gửi");
+            bool isSend;
+            if (isClient == true)
+            {
+                client.TxMessage = TxtMessage;
+                isSend = await client.Send();
+            }else
+            {
+                server.TxMessage = TxtMessage;
+                isSend = await server.Send();
+            }    
+            if (isSend == true) MessageBox.Show("Đã gửi");
             else MessageBox.Show("Lỗi");
         }
         [RelayCommand] 
         private async Task REQT() 
         {
-            client.TxMessage = "CALL";
-            if (await client.Reqt() == true) MessageBox.Show("Đã gửi");
+            bool isSend;
+            if (isClient == true)
+            {
+                client.TxMessage = "CALL";
+                isSend = await client.Reqt();
+            }
+            else
+            {
+                server.TxMessage = "CALL";
+                isSend = await server.Reqt();
+            }
+            if (isSend == true) MessageBox.Show("Đã gửi");
             else MessageBox.Show("Lỗi");
         }
         [RelayCommand] 
