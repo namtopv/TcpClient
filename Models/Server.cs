@@ -46,11 +46,5 @@ namespace TcpClient.Models
                 return false;
             }
         }
-        protected override void OnDisconnect()
-        {
-            _isListening = false;
-            client?.Close();
-            RaiseConnectionLost();
-        }
     }
 }

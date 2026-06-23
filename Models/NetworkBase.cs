@@ -25,8 +25,6 @@ namespace TcpClient.Models
         public const byte etx = 0x03;
         public NetworkStream? _stream;
         public bool _isListening;
-        public event Action<GetFrame>? FrameReceived;
-        public event Action? ConnectionLost;
         public enum CommandType
         {
             REQT = 0x52455154,
@@ -113,41 +111,6 @@ namespace TcpClient.Models
             index += 2;
             finalPacket[index] = etx;
             return finalPacket;
-        }
-        public async Task ReadLoop()
-        {
-            byte[] buffer = new byte[1024];
-            try
-            {
-                while (_isListening && _stream != null)
-                {
-                    int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
-                    if (bytesRead == 0)
-                    {
-                        OnDisconnect();
-                        return;
-                    }
-
-                    byte[] packet = new byte[bytesRead];
-                    Buffer.BlockCopy(buffer, 0, packet, 0, bytesRead);
-
-                    GetFrame? frame = ParseFrame(packet);
-                    if (frame != null)
-                    {
-                        // Kích hoạt event chung
-                        FrameReceived?.Invoke(frame);
-                    }
-                }
-            }
-            catch
-            {
-                OnDisconnect();
-            }
-        }
-        protected abstract void OnDisconnect();
-        protected void RaiseConnectionLost()
-        {
-            ConnectionLost?.Invoke();
         }
     }
 }

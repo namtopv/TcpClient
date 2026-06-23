@@ -20,8 +20,6 @@ namespace TcpClient.ViewModel
 
         [ObservableProperty]
         private string? txtPort;
-        public ObservableCollection<GetFrame> RxMessage { get; set; } = new();
-
         [RelayCommand]
         private async Task Connect()
         {
@@ -38,8 +36,6 @@ namespace TcpClient.ViewModel
                     IpAddress = TxtIPAddress,
                     Port = TxtPort
                 };
-                client.FrameReceived += OnFrameReceived;
-                client.ConnectionLost += () => MessageBox.Show("Client: Mất kết nối tới Server!");
                 isConnect = await client.ConnectToServer();
             }
             else
@@ -49,8 +45,6 @@ namespace TcpClient.ViewModel
                     IpAddress = TxtIPAddress,
                     Port = TxtPort
                 };
-                server.FrameReceived += OnFrameReceived;
-                server.OnDisconnect += () => MessageBox.Show("Server: Client đã ngắt kết nối!");
                 isConnect = await server.ConnetToIP();
             }
 
@@ -63,15 +57,6 @@ namespace TcpClient.ViewModel
                 MessageBox.Show("Lỗi kết nối");
             }
         }
-        private void OnFrameReceived(GetFrame frame)
-        {
-            // Vì luồng đọc mạng chạy ngầm (Background Thread), ta cần dùng Dispatcher 
-            // để đẩy việc chèn dữ liệu giao diện về luồng chính (UI Thread) an toàn.
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                RxMessage.Insert(0, frame); // Thêm gói tin mới nhất lên đầu danh sách hiển thị
-            });
-        }
         [RelayCommand]
         private void Server()
         {
@@ -82,8 +67,20 @@ namespace TcpClient.ViewModel
         {
             isClient = true;
         }
-        [RelayCommand] private void SEND() { }
-        [RelayCommand] private void REQT() { }
-        [RelayCommand] private void HEX() { }
+        [RelayCommand] 
+        private void SEND() 
+        { 
+
+        }
+        [RelayCommand] 
+        private void REQT() 
+        { 
+
+        }
+        [RelayCommand] 
+        private void HEX() 
+        {
+
+        }
     }
 }
