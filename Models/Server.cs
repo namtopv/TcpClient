@@ -8,7 +8,7 @@ using System.Net;
 
 namespace TcpClient.Models
 {
-    internal class Server : NetworkBase
+    internal class Server : ObservableObject
     {
         private string? _ipaddress;
         private string? _port;

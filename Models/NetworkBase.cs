@@ -10,7 +10,7 @@ using System.Text;
 
 namespace TcpClient.Models
 {
-    public abstract class NetworkBase : ObservableObject
+    public class NetworkBase : ObservableObject
     {
         public const int stxByteCount = 1;
         public const int lengthByteCount = 4;
@@ -78,7 +78,7 @@ namespace TcpClient.Models
             frame.Date = DateTime.Now;
             return frame;
         }
-        public byte[] BuildFrame(CommandType cmd, string message)
+        public byte[] BuildFrame(CommandType cmd, string? message)
         {
             int length_message = 0;
             length_message = message.Length;
@@ -111,6 +111,17 @@ namespace TcpClient.Models
             index += 2;
             finalPacket[index] = etx;
             return finalPacket;
+        }
+        public async Task<bool> Write(CommandType commandtype, string? message, System.Net.Sockets.TcpClient client)
+        {
+            _stream = client.GetStream();
+            byte[] packet = BuildFrame(commandtype, message);
+            if(packet != null && _stream != null)
+            {
+                await _stream.WriteAsync(packet, 0, packet.Length);
+                return true;
+            }
+            return false;
         }
     }
 }

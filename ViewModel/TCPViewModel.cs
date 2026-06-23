@@ -15,11 +15,19 @@ namespace TcpClient.ViewModel
     public partial class TCPViewModel : ObservableObject
     {
         bool? isClient = null;
+        Client client;
         [ObservableProperty]
         private string? txtIPAddress;
 
         [ObservableProperty]
         private string? txtPort;
+
+        [ObservableProperty]
+        private string? txtMessage;
+
+        [ObservableProperty]
+        private string? lvMessage;
+
         [RelayCommand]
         private async Task Connect()
         {
@@ -31,7 +39,7 @@ namespace TcpClient.ViewModel
             }
             else if (isClient == true)
             {
-                var client = new Client
+                client = new Client
                 {
                     IpAddress = TxtIPAddress,
                     Port = TxtPort
@@ -68,14 +76,18 @@ namespace TcpClient.ViewModel
             isClient = true;
         }
         [RelayCommand] 
-        private void SEND() 
-        { 
-
+        private async Task SEND() 
+        {
+            client.TxMessage = TxtMessage;
+            if (await client.Send() == true) MessageBox.Show("Đã gửi");
+            else MessageBox.Show("Lỗi");
         }
         [RelayCommand] 
-        private void REQT() 
-        { 
-
+        private async Task REQT() 
+        {
+            client.TxMessage = "CALL";
+            if (await client.Reqt() == true) MessageBox.Show("Đã gửi");
+            else MessageBox.Show("Lỗi");
         }
         [RelayCommand] 
         private void HEX() 

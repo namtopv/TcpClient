@@ -63,7 +63,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBox x:Name="txtMessage" Text="{Binding TxMessage}" VerticalAlignment="Center" Padding="5"/>
+                <TextBox x:Name="txtMessage" Text="{Binding TxtMessage}" VerticalAlignment="Center" Padding="5"/>
                 <Button x:Name="btnSend" Grid.Column="1" Content="SEND" Command="{Binding SENDCommand}" Background="#2196F3" Foreground="White" FontWeight="Bold" IsDefault="True" Width=" 70"/>
                 <Button x:Name="btnReqt" Grid.Column="2" Content="REQT" Command="{Binding REQTCommand}" Background="#2196F3" Foreground="White" FontWeight="Bold" IsDefault="True" Width=" 70"/>
             </Grid>
@@ -75,7 +75,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ListView ItemsSource="{Binding RxMessage}">
+                <ListView ItemsSource="{Binding LvMessage}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Date" DisplayMemberBinding="{Binding Date, StringFormat='{}{0:dd/MM/yyyy HH:mm:ss}'}" Width="150"/>
