@@ -27,7 +27,7 @@ namespace TcpClient.ViewModel
         private string? txtMessage;
 
         [ObservableProperty]
-        private string? lvMessage;
+        private ObservableCollection<GetFrame> lvMessage = new();
 
         [RelayCommand]
         private async Task Connect()
@@ -45,6 +45,7 @@ namespace TcpClient.ViewModel
                     IpAddress = TxtIPAddress,
                     Port = TxtPort
                 };
+                client.FrameReceived += OnFrameReceived;
                 isConnect = await client.ConnectToServer();
             }
             else
@@ -54,10 +55,11 @@ namespace TcpClient.ViewModel
                     IpAddress = TxtIPAddress,
                     Port = TxtPort
                 };
+                server.FrameReceived += OnFrameReceived;
                 isConnect = await server.ConnetToIP();
             }
 
-            if(isConnect == true)
+            if (isConnect == true)
             {
                 MessageBox.Show("Kết nối thành công");
             }
@@ -76,24 +78,25 @@ namespace TcpClient.ViewModel
         {
             isClient = true;
         }
-        [RelayCommand] 
-        private async Task SEND() 
+        [RelayCommand]
+        private async Task SEND()
         {
             bool isSend;
             if (isClient == true)
             {
                 client.TxMessage = TxtMessage;
                 isSend = await client.Send();
-            }else
+            }
+            else
             {
                 server.TxMessage = TxtMessage;
                 isSend = await server.Send();
-            }    
+            }
             if (isSend == true) MessageBox.Show("Đã gửi");
             else MessageBox.Show("Lỗi");
         }
-        [RelayCommand] 
-        private async Task REQT() 
+        [RelayCommand]
+        private async Task REQT()
         {
             bool isSend;
             if (isClient == true)
@@ -109,10 +112,15 @@ namespace TcpClient.ViewModel
             if (isSend == true) MessageBox.Show("Đã gửi");
             else MessageBox.Show("Lỗi");
         }
-        [RelayCommand] 
-        private void HEX() 
+        [RelayCommand]
+        private void HEX()
         {
 
+        }
+        // Vòng đọc chạy trên thread nền -> marshal về UI thread trước khi sửa ObservableCollection
+        private void OnFrameReceived(GetFrame frame)
+        {
+            Application.Current.Dispatcher.Invoke(() => LvMessage.Add(frame));
         }
     }
 }

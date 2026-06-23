@@ -17,6 +17,12 @@ namespace TcpClient.Models
         private string? _rxmessage;
         private System.Net.Sockets.TcpListener? _tcpserver;
         private System.Net.Sockets.TcpClient? _tcpClient;
+        private System.Net.Sockets.NetworkStream? _stream;
+        private NetworkBase? _network;
+        private System.Threading.CancellationTokenSource? _cts;
+
+        // Phát mỗi khi nhận được một khung hợp lệ từ client
+        public event Action<NetworkBase.GetFrame>? FrameReceived;
 
         public string? IpAddress
         {
@@ -58,12 +64,27 @@ namespace TcpClient.Models
             try
             {
                 _tcpClient = await _tcpserver.AcceptTcpClientAsync();
+                StartReceiving();
                 return true;
             }
             catch
             {
                 return false;
             }
+        }
+        private void StartReceiving()
+        {
+            if (_tcpClient == null) return;
+            _stream = _tcpClient.GetStream();
+            _network = new NetworkBase();
+            _cts = new System.Threading.CancellationTokenSource();
+            _ = _network.ReceiveLoopAsync(_stream, frame => FrameReceived?.Invoke(frame), _cts.Token);
+        }
+        public void Disconnect()
+        {
+            _cts?.Cancel();
+            _tcpClient?.Close();
+            _tcpserver?.Stop();
         }
         public async Task<bool> Send()
         {
