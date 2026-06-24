@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net;
 using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Windows;
@@ -15,6 +16,7 @@ namespace TcpClient.ViewModel
     public partial class TCPViewModel : ObservableObject
     {
         bool? isClient = null;
+        bool isConfirm;
         Client client;
         Server server;
         [ObservableProperty]
@@ -81,6 +83,7 @@ namespace TcpClient.ViewModel
         [RelayCommand]
         private async Task SEND()
         {
+            if (isConfirm == false) return;
             bool isSend;
             if (isClient == true)
             {
@@ -117,9 +120,57 @@ namespace TcpClient.ViewModel
         {
 
         }
-        private void OnFrameReceived(GetFrame frame)
+        private async void OnFrameReceived(GetFrame frame)
         {
-            Application.Current.Dispatcher.Invoke(() => LvMessage.Add(frame));
+            if (frame.Command == CommandType.REQT && frame.Message == "CALL")
+            {
+                isConfirm = MessageBoxYesNo(frame);
+                if (isConfirm == true)
+                {
+                    Application.Current.Dispatcher.Invoke(() => LvMessage.Add(frame));
+                    if (isClient == true) await client.Resp("OK");
+                    else await server.Resp("OK");
+                }
+                else
+                {
+                    if (isClient == true) await client.Resp("NO");
+                    else await server.Resp("NO");
+                }
+            }
+            else if(frame.Command == CommandType.RESP)
+            {
+                if (frame.Message == "OK") isConfirm = true;
+                else isConfirm = false;
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(() => LvMessage.Add(frame));
+            }
+        }
+        public string GetLocalIPv4Address()
+        {
+            string hostName = Dns.GetHostName();
+            IPAddress[] addresses = Dns.GetHostAddresses(hostName);
+            IPAddress? ipv4Address = addresses.FirstOrDefault(ip =>
+                ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
+                !IPAddress.IsLoopback(ip)
+            );
+            return ipv4Address?.ToString() ?? "127.0.0.1";
+        }
+        public TCPViewModel()
+        {
+            txtIPAddress = GetLocalIPv4Address();
+            txtPort = "8888";
+        }
+        public bool MessageBoxYesNo(GetFrame getframe)
+        {
+            MessageBoxResult result = MessageBox.Show(
+                $"Command: {getframe.Command}\nMessage: {getframe.Message}",
+                "Connection Request",
+                MessageBoxButton.YesNo
+            );
+            if (result == MessageBoxResult.Yes) return true;
+            else return false;
         }
     }
 }

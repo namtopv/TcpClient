@@ -97,5 +97,11 @@ namespace TcpClient.Models
             if (await networkbase.Write(TcpClient.Models.NetworkBase.CommandType.REQT, TxMessage, _tcpClient) == true) return true;
             else return false;
         }
+        public async Task<bool> Resp(string respMessage)
+        {
+            NetworkBase networkbase = new NetworkBase();
+            if (await networkbase.Write(TcpClient.Models.NetworkBase.CommandType.RESP, respMessage, _tcpClient) == true) return true;
+            else return false;
+        }
     }
 }
