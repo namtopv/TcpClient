@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,12 +16,12 @@ namespace TcpClient.Views
     /// <summary>
     /// Interaction logic for MainWindowView.xaml
     /// </summary>
-    public partial class TCPView : Window 
+    public partial class MainWindowView : Window
     {
-        public TCPView()
+        public MainWindowView()
         {
             InitializeComponent();
-            DataContext = new TCPViewModel();
+            DataContext = new MainWindowViewModel();
         }
     }
 }
