@@ -19,7 +19,6 @@ namespace TcpClient.Models
         private NetworkBase? _network;
         private System.Threading.CancellationTokenSource? _cts;
 
-        // Phát mỗi khi nhận được một khung hợp lệ từ server
         public event Action<NetworkBase.GetFrame>? FrameReceived;
         public string? IpAddress
         {

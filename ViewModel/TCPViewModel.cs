@@ -117,7 +117,6 @@ namespace TcpClient.ViewModel
         {
 
         }
-        // Vòng đọc chạy trên thread nền -> marshal về UI thread trước khi sửa ObservableCollection
         private void OnFrameReceived(GetFrame frame)
         {
             Application.Current.Dispatcher.Invoke(() => LvMessage.Add(frame));

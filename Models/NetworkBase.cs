@@ -124,43 +124,33 @@ namespace TcpClient.Models
             }
             return false;
         }
-        // Vòng lặp đọc liên tục từ stream, tự tách từng khung hoàn chỉnh rồi parse.
-        // Khung: STX(1) | length(4 BE) | command(4 BE) | message(N) | checksum(2) | ETX(1) = 12 + N byte.
         public async Task ReceiveLoopAsync(NetworkStream stream, Action<GetFrame> onFrame, CancellationToken token)
         {
             var buffer = new List<byte>();
             var readBuffer = new byte[4096];
-            const int maxFrameSize = 1_000_000; // chặn cấp phát quá lớn khi stream mất đồng bộ
-
             try
             {
-                while (token.IsCancellationRequested == false)
+                while(token.IsCancellationRequested == false)
                 {
-                    int bytesRead = await stream.ReadAsync(readBuffer, 0, readBuffer.Length, token);
-                    if (bytesRead == 0) break; // đầu kia đóng kết nối
+                    int byteRead = await stream.ReadAsync(readBuffer, 0, readBuffer.Length, token);
+                    if (byteRead == 0) break;
 
-                    for (int i = 0; i < bytesRead; i++) buffer.Add(readBuffer[i]);
-
-                    // Tách tất cả khung hoàn chỉnh hiện có trong buffer
+                    for (int i = 0; i < byteRead; i++) buffer.Add(readBuffer[i]);
                     while (true)
                     {
                         int stxIndex = buffer.IndexOf(stx);
-                        if (stxIndex < 0) { buffer.Clear(); break; }        // không có STX -> bỏ rác
-                        if (stxIndex > 0) buffer.RemoveRange(0, stxIndex);  // bỏ rác trước STX
+                        if (stxIndex < 0) { buffer.Clear(); break; }
+                        if (stxIndex > 0) buffer.RemoveRange(0, stxIndex);
 
-                        if (buffer.Count < 9) break; // chưa đủ STX + length(4) + command(4)
+                        if (buffer.Count < 9) break;
 
                         int messageLength = (buffer[1] << 24) | (buffer[2] << 16)
                                           | (buffer[3] << 8) | buffer[4];
-                        if (messageLength < 0 || messageLength > maxFrameSize)
-                        {
-                            buffer.RemoveAt(0); // length lỗi -> bỏ 1 byte, dò STX kế tiếp
-                            continue;
-                        }
+                        if(messageLength < 0) { buffer.RemoveAt(0); continue; }
 
                         int totalLength = stxByteCount + lengthByteCount + commandByteCount
-                                        + messageLength + checksumByteCount + etxByteCount; // 12 + N
-                        if (buffer.Count < totalLength) break; // chờ nhận thêm
+                                        + messageLength + checksumByteCount + etxByteCount;
+                        if (buffer.Count < totalLength) break;
 
                         byte[] packet = buffer.GetRange(0, totalLength).ToArray();
                         buffer.RemoveRange(0, totalLength);
@@ -170,9 +160,7 @@ namespace TcpClient.Models
                     }
                 }
             }
-            catch (OperationCanceledException) { }   // bị hủy chủ động
-            catch (IOException) { }                   // stream đóng đột ngột
-            catch (ObjectDisposedException) { }       // stream đã dispose
+            catch{ }      
         }
     }
 }
