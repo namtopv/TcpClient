@@ -19,25 +19,41 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Column="0" Text="IP Address:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                <TextBox x:Name="txtIp" Grid.Column="1" Text="{Binding TxtIPAddress, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Padding="3"/>
 
-                <TextBlock Grid.Column="2" Text="Port:" VerticalAlignment="Center" Margin="10,0,5,0"/>
-                <TextBox x:Name="txtPort" Grid.Column="3" Text="{Binding TxtPort, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Padding="3"/>
+                <TextBlock Grid.Column="0" Text="Name" 
+                   VerticalAlignment="Center" 
+                   Margin="0,0,5,0"/>
+                <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding Comports}"
+                          SelectedItem="{Binding SelectedComPort, Mode=TwoWay}"/>
 
+                <TextBlock Grid.Column="2" Text="Baud" 
+                           VerticalAlignment="Center" 
+                           Margin="10,0,5,0"/>
+                <ComboBox Grid.Column="3"
+                          ItemsSource="{Binding Baud}"
+                          SelectedItem="{Binding SelectedBaud, Mode=TwoWay}"/>
+
+                <TextBlock Grid.Column="4" Text="Size" 
+                           VerticalAlignment="Center" 
+                           Margin="10,0,5,0"/>
+                <ComboBox Grid.Column="5"
+                          ItemsSource="{Binding Size}"
+                          SelectedItem="{Binding SelectedSize, Mode=TwoWay}"/>
                 <Button x:Name="btnConnect" 
-                Grid.Column="4" 
-                Background="LightCoral" 
-                Content="Kết nối" 
-                Margin="10,0,0,0" 
-                Padding="10,3" 
-                Foreground="Black" 
-                FontWeight="Bold"
-                Command="{Binding ConnectCommand}"/>
+                        Grid.Column="6" 
+                        Background="LightCoral" 
+                        Content="Kết nối" 
+                        Margin="10,0,0,0" 
+                        Padding="10,3" 
+                        Foreground="Black" 
+                        FontWeight="Bold"
+                        Command="{Binding ConnectCommand}"/>
             </Grid>
         </GroupBox>
 
@@ -60,16 +76,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ListView ItemsSource="{Binding LvMessage}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="Date" DisplayMemberBinding="{Binding Date, StringFormat='{}{0:dd/MM/yyyy HH:mm:ss}'}" Width="150"/>
-                            <GridViewColumn Header="Length" DisplayMemberBinding="{Binding Length}" Width="60"/>
-                            <GridViewColumn Header="Command" DisplayMemberBinding="{Binding Command}" Width="60"/>
-                            <GridViewColumn Header="Message" DisplayMemberBinding="{Binding Message}" Width="400"/>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
+                <TextBlock Text="{Binding TbMessage}"/>
                 <Button x:Name="btnHex" Grid.Column="1" Content=" HEX/ASCII " Margin="10,0,0,0" Height="40" Padding="15,5" Command="{Binding HEXCommand}" Background="#2196F3" Foreground="White"/>
             </Grid>
         </GroupBox>

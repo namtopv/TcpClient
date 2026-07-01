@@ -18,7 +18,8 @@ namespace TcpClient.ViewModel
         [RelayCommand]
         public void UART()
         {
-
+            UARTView uartview = new UARTView();
+            uartview.Show();
         }
     }
 }
